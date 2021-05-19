@@ -14,6 +14,10 @@ Polygon::Polygon(vector<Point>&& data):
 {
 }
 
+// Calculates projection as minimal distance from point to each of segments in polygon
+// To do this we solve simple vector equation to get perpendicular to segment line, 
+// then we can compute parameter which shows us is destination point lies on segment or not
+// If it is not, then we just get the minimal distance as the distance to one end of the segment
 vector<Projection> Polygon::calculateProjection(const Point& pt) const
 {
 	vector<Projection> result;
@@ -35,7 +39,6 @@ vector<Projection> Polygon::calculateProjection(const Point& pt) const
 		}
 	};
 
-	// for each section we calculate distance to it from our point
 	for (size_t i = 0; i < m_points.size() - 1; i++) {
 		auto point0 = m_points[i];
 		auto point1 = m_points[i + 1];
@@ -54,7 +57,7 @@ vector<Projection> Polygon::calculateProjection(const Point& pt) const
 		Point temp(abs(a.x), abs(a.y), abs(a.z));
 		double parameter = (temp.x >= temp.y && temp.x >= temp.z) ? (r1.x - r0.x) / a.x : ((temp.y >= temp.z) ? (r1.y - r0.y) / a.y : (r1.z - r0.z) / a.z);
 
-		// if projection lies between point0 and point1 then min distance is length of perpendicular, else min distance is distance to either of points point0 or point1
+		// if projection lies between point0 and point1 then min distance is length of perpendicular, else min distance is distance to either of points: point0 or point1
 		double distance;
 		if (parameter >= 0 && parameter <= 1) {
 			addResult(r1, i, parameter, r1.distance(pt));
